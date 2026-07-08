@@ -9,7 +9,7 @@
  * Zustand-selected `positions` array.
  */
 import { effectiveApy, toMarketParams } from "@/lib/prism"
-import type { Position, Vault } from "@/types"
+import type { Position, RiskProfile, Vault } from "@/types"
 
 /** 1 real second of wall-clock time ≈ 6 hours of elapsed-time growth, tuned for visibly ticking numbers in a live demo. */
 export const DEMO_TIME_ACCELERATION = 24 * 6
@@ -19,16 +19,28 @@ function findVault(vaults: readonly Vault[], vaultId: string): Vault | undefined
   return vaults.find((v) => v.id === vaultId)
 }
 
-/** A position's effective APY (fraction, e.g. 0.084 = 8.4%) given its entry price and the vault's realized-so-far APY. */
-export function effectiveApyForPosition(position: Position, vault: Vault): number {
-  if (position.profile === "standard") return vault.currentApy / 100
+/**
+ * Effective APY (fraction, e.g. 0.084 = 8.4%) for a given deposit type +
+ * entry price against a vault's realized-so-far APY — the one accrual
+ * formula shared by live positions (via `effectiveApyForPosition` below)
+ * AND the deposit modal's pre-deposit projection (plan/07 §3), so the two
+ * can never drift apart. `entryPrice` is the Stable-token price (required
+ * iff `profile !== 'standard'`); Elevated's entry is `1 - entryPrice`, same
+ * convention as `Position.entryPrice` (types/index.ts).
+ */
+export function effectiveApyForEntry(profile: RiskProfile, entryPrice: number | undefined, vault: Vault): number {
+  if (profile === "standard") return vault.currentApy / 100
+  if (entryPrice === undefined) return 0
 
   const x = vault.market.realizedApySoFar / 100
-  const entry = position.entryPrice
-  if (entry === undefined) return 0
-  const entryForKind = position.profile === "stable" ? entry : 1 - entry
+  const entryForKind = profile === "stable" ? entryPrice : 1 - entryPrice
   const params = toMarketParams(vault.market.targetApy, vault.market.protectionBuffer)
-  return effectiveApy(position.profile, entryForKind, x, params)
+  return effectiveApy(profile, entryForKind, x, params)
+}
+
+/** A position's effective APY (fraction, e.g. 0.084 = 8.4%) given its entry price and the vault's realized-so-far APY. */
+export function effectiveApyForPosition(position: Position, vault: Vault): number {
+  return effectiveApyForEntry(position.profile, position.entryPrice, vault)
 }
 
 /**

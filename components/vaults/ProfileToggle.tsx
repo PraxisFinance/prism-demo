@@ -8,6 +8,7 @@ interface ProfileToggleProps {
   value: RiskProfile
   onValueChange: (profile: RiskProfile) => void
   className?: string
+  disabled?: boolean
 }
 
 /**
@@ -19,6 +20,7 @@ export function ProfileToggle({
   value,
   onValueChange,
   className,
+  disabled,
 }: ProfileToggleProps) {
   return (
     <ToggleGroup
@@ -27,6 +29,7 @@ export function ProfileToggle({
         const nextProfile = next[0] as RiskProfile | undefined
         if (nextProfile) onValueChange(nextProfile)
       }}
+      disabled={disabled}
       className={cn("rounded-xl bg-muted p-1", className)}
     >
       {RISK_PROFILES.map((profile) => (
@@ -35,7 +38,7 @@ export function ProfileToggle({
           value={profile.id}
           aria-label={profile.label}
           className={cn(
-            "rounded-lg px-4 font-medium text-muted-foreground data-[state=on]:bg-card data-[state=on]:shadow-sm",
+            "rounded-lg px-4 font-medium text-muted-foreground data-pressed:bg-card data-pressed:shadow-sm",
             value === profile.id && PROFILE_CLASSES[profile.id].text
           )}
         >

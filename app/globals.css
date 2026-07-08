@@ -200,3 +200,30 @@
     stroke-dashoffset: -16;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Standard/Stable/Elevated card selector (components/vaults/ProfileCardSelector.tsx) */
+/* ------------------------------------------------------------------ */
+
+/* Curve icons use `pathLength={100}` so stroke-dasharray/-offset are always
+   in the same 0-100 units regardless of the hand-drawn path's real length.
+   Resting state is always fully drawn (offset 0) — the animation below is
+   a one-shot "draw-in" replay on selection, not a persistent loop, and it
+   ends exactly where the resting state already is so there's no jump. */
+.profile-curve {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .profile-curve-draw {
+    animation: profile-curve-draw 0.9s ease-out;
+  }
+}
+@keyframes profile-curve-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

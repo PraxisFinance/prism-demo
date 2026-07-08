@@ -2,28 +2,28 @@ import { LabeledStat } from "@/components/common/LabeledStat"
 import { PercentDelta } from "@/components/common/PercentDelta"
 import { StatCard } from "@/components/common/StatCard"
 import { formatApy, formatDate, formatPrice } from "@/lib/format"
-import { PROFILE_CLASSES } from "@/lib/profiles"
-import { cn } from "@/lib/utils"
 import { daysUntil } from "@/lib/vault-filters"
-import type { RiskProfile, Vault } from "@/types"
+import type { Vault } from "@/types"
 
 interface MarketSummaryProps {
   vault: Vault
-  profile: RiskProfile
 }
 
 /**
  * The single-number headline + market parameters for this vault's Prism
  * market. Deliberately never renders a band/curve/confidence score — see
  * plan/06-vault-details-and-prediction.md §4 and plan/04 §0.
+ *
+ * No longer gated by a selected deposit type (per the Figma redesign
+ * follow-up, point 4): this is a market overview, not a per-profile view,
+ * so it always shows the market-implied Predicted APY headline plus both
+ * tokens' prices. The actual Standard/Stable/Elevated choice is made in the
+ * Deposit panel (VaultActionPanel), which still has its own
+ * ProfileCardSelector.
  */
-export function MarketSummary({ vault, profile }: MarketSummaryProps) {
+export function MarketSummary({ vault }: MarketSummaryProps) {
   const { market } = vault
-  const isMarketView = profile !== "standard"
-  const headline = isMarketView ? market.impliedApy : vault.currentApy
-  const headlineLabel = isMarketView ? "Predicted APY" : "Current APY"
-  const tokenPrice = profile === "stable" ? market.stablePrice : profile === "elevated" ? market.elevatedPrice : null
-  const deltaVsCurrent = headline - vault.currentApy
+  const deltaVsCurrent = market.impliedApy - vault.currentApy
   const daysLeft = daysUntil(market.marketEndAt)
 
   return (
@@ -31,23 +31,16 @@ export function MarketSummary({ vault, profile }: MarketSummaryProps) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <StatCard
           className="ring-0 p-0"
-          label={headlineLabel}
+          label="Predicted APY"
           value={
-            <span
-              className={cn(
-                "font-heading text-4xl font-semibold",
-                PROFILE_CLASSES[profile].text
-              )}
-            >
-              {formatApy(headline)}
+            <span className="font-heading text-4xl font-semibold text-primary">
+              {formatApy(market.impliedApy)}
             </span>
           }
           delta={
-            tokenPrice !== null ? (
-              <span className="text-sm text-muted-foreground">
-                {formatPrice(tokenPrice)} / token
-              </span>
-            ) : undefined
+            <span className="text-sm text-muted-foreground">
+              Stable {formatPrice(market.stablePrice)} · Elevated {formatPrice(market.elevatedPrice)}
+            </span>
           }
         />
         <div className="flex flex-col items-end gap-1.5">
@@ -67,12 +60,10 @@ export function MarketSummary({ vault, profile }: MarketSummaryProps) {
           label="Protection buffer"
           value={`${market.protectionBuffer.toFixed(1)} pts`}
         />
-        {isMarketView && (
-          <LabeledStat
-            label="Protected while realized APY \u2265"
-            value={formatApy(market.boundaryApy)}
-          />
-        )}
+        <LabeledStat
+          label="Protected while realized APY \u2265"
+          value={formatApy(market.boundaryApy)}
+        />
       </div>
 
       <div className="flex flex-col gap-1 border-t pt-4 text-sm">

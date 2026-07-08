@@ -1,9 +1,17 @@
-import { StatCard } from "@/components/common/StatCard"
 import { formatApy, formatUsd } from "@/lib/format"
 import type { Vault } from "@/types"
 
 interface VaultStatsRowProps {
   vault: Vault
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="font-heading text-2xl font-medium text-foreground">{value}</span>
+    </div>
+  )
 }
 
 /**
@@ -12,14 +20,18 @@ interface VaultStatsRowProps {
  * number — no separate deposits-vs-liquidity split — so both slots read
  * from `tvlUsd` rather than inventing a second number. See plan/06 redesign
  * Q&A.
+ *
+ * Plain label/value pairs (no individual card/border) — Figma shows these
+ * sitting directly on the shared "info card" surface, not as separate
+ * boxed stat cards. See plan/figma-mapping.md.
  */
 export function VaultStatsRow({ vault }: VaultStatsRowProps) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-      <StatCard label="Total Deposits" value={formatUsd(vault.tvlUsd)} />
-      <StatCard label="Liquidity" value={formatUsd(vault.tvlUsd)} />
-      <StatCard label="Current APY" value={formatApy(vault.currentApy)} />
-      <StatCard label="Predicted APY" value={formatApy(vault.market.impliedApy)} />
+      <Stat label="Total Deposits" value={formatUsd(vault.tvlUsd)} />
+      <Stat label="Liquidity" value={formatUsd(vault.tvlUsd)} />
+      <Stat label="Current APY" value={formatApy(vault.currentApy)} />
+      <Stat label="Predicted APY" value={formatApy(vault.market.impliedApy)} />
     </div>
   )
 }

@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ProfileBadge } from "@/components/vaults/ProfileBadge"
-import { ProfileToggle } from "@/components/vaults/ProfileToggle"
+import { ProfileCardSelector } from "@/components/vaults/ProfileCardSelector"
+import { SettlementPreviewTable } from "@/components/vaults/SettlementPreviewTable"
 import { formatApy } from "@/lib/format"
-import { elevatedSettlementApy, stableSettlementApy, toMarketParams } from "@/lib/prism"
+import { cn } from "@/lib/utils"
 import type { Position, RiskProfile, Vault } from "@/types"
 
 interface VaultActionPanelProps {
@@ -18,9 +19,8 @@ interface VaultActionPanelProps {
   positions: Position[]
   onDeposit: () => void
   onWithdraw: (positionId: string) => void
+  className?: string
 }
-
-const PREVIEW_REALIZED_APYS = [2, 4, 6, 8, 10]
 
 /**
  * Visual match of the Figma design's persistent right-side Deposit/Withdraw
@@ -38,15 +38,14 @@ export function VaultActionPanel({
   positions,
   onDeposit,
   onWithdraw,
+  className,
 }: VaultActionPanelProps) {
   const { market } = vault
   const matured = market.matured
-  const params = toMarketParams(market.targetApy, market.protectionBuffer)
   const isMarketProfile = profile !== "standard"
-  const settle = profile === "elevated" ? elevatedSettlementApy : stableSettlementApy
 
   return (
-    <Card className="h-fit p-5">
+    <Card className={cn("h-fit p-5", className)}>
       <Tabs defaultValue="deposit">
         <TabsList className="w-full">
           <TabsTrigger value="deposit" className="flex-1">
@@ -60,7 +59,7 @@ export function VaultActionPanel({
         <TabsContent value="deposit" className="flex flex-col gap-4 pt-4">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs text-muted-foreground">Choose option</span>
-            <ProfileToggle value={profile} onValueChange={onProfileChange} className="w-full" />
+            <ProfileCardSelector value={profile} onValueChange={onProfileChange} className="max-w-full" />
           </div>
 
           <div className="flex flex-col gap-1.5 border-t pt-4 text-sm">
@@ -82,34 +81,9 @@ export function VaultActionPanel({
             )}
           </div>
 
-          {isMarketProfile ? (
-            <div className="flex flex-col gap-2 border-t pt-4">
-              <span className="text-xs text-muted-foreground">Expected performance</span>
-              <div className="overflow-hidden rounded-lg border text-xs">
-                <div className="grid grid-cols-6 gap-1 bg-muted/60 px-2 py-1.5 font-medium text-muted-foreground">
-                  <span className="col-span-1">Real APY</span>
-                  {PREVIEW_REALIZED_APYS.map((x) => (
-                    <span key={x} className="text-right tabular-nums">
-                      {x}%
-                    </span>
-                  ))}
-                </div>
-                <div className="grid grid-cols-6 gap-1 px-2 py-1.5">
-                  <span className="col-span-1 text-muted-foreground">You receive</span>
-                  {PREVIEW_REALIZED_APYS.map((x) => (
-                    <span key={x} className="text-right font-medium tabular-nums text-foreground">
-                      {settle(x, params).toFixed(1)}%
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <p className="border-t pt-4 text-xs text-muted-foreground">
-              Standard deposits earn the vault{"\u2019"}s spot APY directly {"\u2014"} no Prism market
-              exposure.
-            </p>
-          )}
+          <div className="border-t pt-4">
+            <SettlementPreviewTable vault={vault} profile={profile} />
+          </div>
 
           <div className="flex flex-col gap-1.5 border-t pt-4">
             <span className="text-xs text-muted-foreground">Amount</span>

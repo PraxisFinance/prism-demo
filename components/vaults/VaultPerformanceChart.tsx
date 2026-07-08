@@ -38,6 +38,10 @@ const RANGES: { value: HistoryRange; label: string }[] = [
  * only consumed internally by lib/market.ts). This is genuinely historical
  * data, unlike the Prism settlement curve below it (plan/06 §5), which is a
  * pure function of (targetApy, protectionBuffer), never a time series.
+ *
+ * Content-only (no card/border) — it's rendered inside the shared
+ * VaultDetails "info card" alongside the header/stats/general-info, per the
+ * Figma redesign's single bordered container. See plan/figma-mapping.md.
  */
 export function VaultPerformanceChart({ vault }: VaultPerformanceChartProps) {
   const [metric, setMetric] = useState<HistoryMetric>("apy")
@@ -49,7 +53,7 @@ export function VaultPerformanceChart({ vault }: VaultPerformanceChartProps) {
   )
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-heading text-base font-medium text-foreground">
           History &amp; Performance
@@ -68,7 +72,7 @@ export function VaultPerformanceChart({ vault }: VaultPerformanceChartProps) {
                 key={m.value}
                 value={m.value}
                 aria-label={m.label}
-                className="rounded-md px-3 text-xs data-[state=on]:bg-card data-[state=on]:shadow-sm"
+                className="rounded-md px-3 text-xs data-pressed:bg-card data-pressed:shadow-sm"
               >
                 {m.label}
               </ToggleGroupItem>
@@ -87,7 +91,7 @@ export function VaultPerformanceChart({ vault }: VaultPerformanceChartProps) {
                 key={r.value}
                 value={r.value}
                 aria-label={r.label}
-                className="rounded-md px-3 text-xs data-[state=on]:bg-card data-[state=on]:shadow-sm"
+                className="rounded-md px-3 text-xs data-pressed:bg-card data-pressed:shadow-sm"
               >
                 {r.label}
               </ToggleGroupItem>

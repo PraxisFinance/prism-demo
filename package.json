@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "snapshot:refresh": "tsx scripts/refresh-fallback-snapshot.ts",
     "logos:chains": "tsx scripts/fetch-chain-logos.ts",
-    "logos:protocols": "tsx scripts/fetch-protocol-logos.ts"
+    "logos:protocols": "tsx scripts/fetch-protocol-logos.ts",
+    "logos:tokens": "tsx scripts/fetch-token-logos.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

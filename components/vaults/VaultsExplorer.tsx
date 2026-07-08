@@ -12,6 +12,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
+import { ModalRoot } from "@/components/modals/ModalRoot"
 import { VaultTable } from "@/components/vaults/VaultTable"
 import { VaultsToolbar } from "@/components/vaults/VaultsToolbar"
 import {
@@ -107,6 +108,8 @@ export function VaultsExplorer({ vaults }: VaultsExplorerProps) {
           </Empty>
         )}
       </div>
+
+      <ModalRoot vaults={vaults} />
     </div>
   )
 }
