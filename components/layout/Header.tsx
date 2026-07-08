@@ -18,7 +18,7 @@ export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-6 px-6">
         <Link href="/vaults" className="flex items-center gap-2">
           <Image src="/praxis-logo.svg" alt="" width={28} height={28} />
