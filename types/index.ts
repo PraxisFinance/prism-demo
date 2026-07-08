@@ -9,6 +9,8 @@
  * (papers/whitepaper/praxis_prism.tex).
  */
 
+import type { PoolHistoryPoint } from "@/lib/defillama"
+
 export type RiskProfile = "stable" | "standard" | "elevated"
 
 export type VaultCategory = "Stablecoin" | "ETH" | "LST" | "RWA" | "Blue-chip"
@@ -65,6 +67,19 @@ export interface Vault {
   /** 1-2 sentences. */
   description: string
   market: VaultMarket
+  /** Real daily series from DeFiLlama (live or fallback) — powers the "History & Performance" chart (plan/06 redesign). Not a forecast; purely historical. */
+  history: readonly PoolHistoryPoint[]
+  /**
+   * "General information" fields for the Vault Details redesign
+   * (plan/06 §Figma). DeFiLlama has no API for these — invented per-vault
+   * mock values on VaultSource (data/vault-sources.ts), not derived data.
+   */
+  curator: string
+  /** epoch ms */
+  contractDeployedAt: number
+  auditFirm: string
+  /** epoch ms */
+  lastAuditAt: number
 }
 
 /**

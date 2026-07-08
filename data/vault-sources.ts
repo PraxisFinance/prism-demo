@@ -28,6 +28,17 @@ export interface VaultSource {
   marketDurationDays?: number
   /** pin this vault's market to already-settled, for demoing that state */
   forceMatured?: boolean
+  /**
+   * Mock "General information" fields for the Vault Details redesign
+   * (plan/06 §Figma) — Curators/audits aren't a DeFiLlama concept, so these
+   * are invented, plausible-per-vault values rather than derived data.
+   */
+  curator: string
+  /** epoch ms */
+  contractDeployedAt: number
+  auditFirm: string
+  /** epoch ms */
+  lastAuditAt: number
 }
 
 export const VAULT_SOURCES: VaultSource[] = [
@@ -41,6 +52,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "US Yield Coin",
     category: "RWA",
     description: "Tokenized short-term US Treasury fund.",
+    curator: "Circle",
+    contractDeployedAt: Date.UTC(2024, 2, 15),
+    auditFirm: "Trail of Bits",
+    lastAuditAt: Date.UTC(2025, 10, 2),
   },
   {
     id: "bsc-slisbnb",
@@ -52,6 +67,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "Lista Staked BNB",
     category: "LST",
     description: "Liquid-staked BNB via Lista.",
+    curator: "Lista DAO",
+    contractDeployedAt: Date.UTC(2023, 8, 1),
+    auditFirm: "PeckShield",
+    lastAuditAt: Date.UTC(2025, 7, 20),
   },
   {
     id: "base-steakusdc",
@@ -63,6 +82,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "USD Coin",
     category: "Stablecoin",
     description: "Curated USDC lending vault on Morpho Blue.",
+    curator: "Steakhouse Financial",
+    contractDeployedAt: Date.UTC(2024, 5, 10),
+    auditFirm: "Spearbit",
+    lastAuditAt: Date.UTC(2026, 0, 14),
   },
   {
     id: "base-rwausdi",
@@ -74,6 +97,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "RWA USD Index",
     category: "RWA",
     description: "Real-world-asset-backed USD yield strategy.",
+    curator: "Multipli Labs",
+    contractDeployedAt: Date.UTC(2024, 8, 22),
+    auditFirm: "Zellic",
+    lastAuditAt: Date.UTC(2025, 11, 5),
   },
   {
     id: "avax-savax",
@@ -85,6 +112,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "Staked AVAX",
     category: "LST",
     description: "Liquid-staked AVAX via BENQI.",
+    curator: "BENQI",
+    contractDeployedAt: Date.UTC(2022, 3, 1),
+    auditFirm: "Halborn",
+    lastAuditAt: Date.UTC(2025, 9, 18),
   },
   {
     id: "avax-savusd",
@@ -96,6 +127,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "Staked avUSD",
     category: "Stablecoin",
     description: "Yield-bearing stablecoin strategy on Avalanche.",
+    curator: "Avant Protocol",
+    contractDeployedAt: Date.UTC(2024, 11, 3),
+    auditFirm: "Zenith Security",
+    lastAuditAt: Date.UTC(2026, 1, 2),
   },
   {
     id: "megaeth-usdm",
@@ -107,6 +142,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "Mountain Protocol USD",
     category: "Stablecoin",
     description: "USDM lending market on Aave v3.",
+    curator: "Mountain Protocol",
+    contractDeployedAt: Date.UTC(2025, 0, 20),
+    auditFirm: "OpenZeppelin",
+    lastAuditAt: Date.UTC(2026, 2, 1),
   },
   {
     id: "mantle-susde",
@@ -118,6 +157,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "Staked USDe",
     category: "Stablecoin",
     description: "Ethena's staked USDe lending market on Aave v3.",
+    curator: "Ethena Labs",
+    contractDeployedAt: Date.UTC(2024, 3, 15),
+    auditFirm: "Sigma Prime",
+    lastAuditAt: Date.UTC(2025, 8, 9),
   },
   {
     id: "mantle-usdy",
@@ -129,6 +172,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "US Dollar Yield",
     category: "RWA",
     description: "Tokenized short-term Treasuries yield token.",
+    curator: "Ondo Finance",
+    contractDeployedAt: Date.UTC(2023, 10, 8),
+    auditFirm: "Certik",
+    lastAuditAt: Date.UTC(2025, 6, 30),
   },
   {
     id: "katana-steakusdc",
@@ -141,6 +188,10 @@ export const VAULT_SOURCES: VaultSource[] = [
     category: "Stablecoin",
     description: "Curated USDC lending vault on Morpho Blue.",
     forceMatured: true,
+    curator: "Steakhouse Financial",
+    contractDeployedAt: Date.UTC(2024, 6, 1),
+    auditFirm: "Spearbit",
+    lastAuditAt: Date.UTC(2025, 4, 15),
   },
   {
     id: "katana-vbeth",
@@ -152,5 +203,9 @@ export const VAULT_SOURCES: VaultSource[] = [
     assetName: "Yearn Vault ETH",
     category: "Blue-chip",
     description: "Automated ETH yield vault by Yearn.",
+    curator: "Yearn Finance",
+    contractDeployedAt: Date.UTC(2025, 0, 10),
+    auditFirm: "ChainSecurity",
+    lastAuditAt: Date.UTC(2026, 0, 25),
   },
 ]

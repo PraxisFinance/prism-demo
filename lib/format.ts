@@ -56,3 +56,20 @@ export function formatCompact(value: number): string {
     maximumFractionDigits: 1,
   }).format(value)
 }
+
+/** An epoch-ms timestamp as a short date, e.g. "Jan 12, 2026". Uses the native Intl API, not a date lib (see file header). */
+export function formatDate(epochMs: number): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(epochMs)
+}
+
+/** A compact chart-axis date label, e.g. "Jun 5" (no year). */
+export function formatShortDate(epochMs: number): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(epochMs)
+}

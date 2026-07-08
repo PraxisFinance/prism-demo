@@ -55,6 +55,11 @@ async function buildVault(source: VaultSource): Promise<Vault> {
     currentApy,
     description: source.description,
     market,
+    history,
+    curator: source.curator,
+    contractDeployedAt: source.contractDeployedAt,
+    auditFirm: source.auditFirm,
+    lastAuditAt: source.lastAuditAt,
   }
 }
 

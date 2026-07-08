@@ -1,21 +1,22 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { BookOpen, PieChart, Vault } from "lucide-react"
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BookOpen, PieChart } from "lucide-react";
 
-import { ConnectWalletButton } from "@/components/layout/ConnectWalletButton"
-import { cn } from "@/lib/utils"
+import { VaultIcon } from "@/components/icons/vault-icon";
+import { ConnectWalletButton } from "@/components/layout/ConnectWalletButton";
+import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/vaults", label: "Vaults", icon: Vault },
+  { href: "/vaults", label: "Vaults", icon: VaultIcon },
   { href: "/portfolio", label: "Portfolio", icon: PieChart },
   { href: "/how-it-works", label: "How it works", icon: BookOpen },
-] as const
+] as const;
 
 export function Header() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur">
@@ -29,8 +30,8 @@ export function Header() {
 
         <nav className="flex items-center gap-6">
           {NAV_ITEMS.map((item) => {
-            const active = pathname?.startsWith(item.href)
-            const Icon = item.icon
+            const active = pathname?.startsWith(item.href);
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
@@ -39,18 +40,18 @@ export function Header() {
                   "flex items-center gap-1.5 text-sm font-medium transition-colors",
                   active
                     ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="size-4" />
                 {item.label}
               </Link>
-            )
+            );
           })}
         </nav>
 
         <ConnectWalletButton />
       </div>
     </header>
-  )
+  );
 }

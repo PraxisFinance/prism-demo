@@ -3,8 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -15,7 +14,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { formatApy, formatUsd } from "@/lib/format"
-import { daysUntil } from "@/lib/vault-filters"
+import { MaturityBadge } from "@/components/vaults/MaturityBadge"
+import chainLogos from "@/data/chain-logos.json"
+import protocolLogos from "@/data/protocol-logos.json"
 import type { Vault } from "@/types"
 
 interface VaultTableProps {
@@ -31,16 +32,14 @@ function initials(name: string): string {
     .join("")
 }
 
-function MaturityBadge({ vault }: { vault: Vault }) {
-  if (vault.market.matured) {
-    return <Badge variant="secondary">Matured</Badge>
-  }
-  const days = daysUntil(vault.market.marketEndAt)
-  return (
-    <Badge variant="outline" className="border-positive/30 text-positive">
-      Live {"\u2014"} {days}d left
-    </Badge>
-  )
+/** Populated by `npm run logos:chains` (scripts/fetch-chain-logos.ts) — falls back to initials for any chain not yet in the manifest. */
+function chainLogoSrc(chainLabel: string): string | undefined {
+  return (chainLogos as Record<string, string>)[chainLabel]
+}
+
+/** Populated by `npm run logos:protocols` (scripts/fetch-protocol-logos.ts) — falls back to initials for any protocol not yet in the manifest. */
+function protocolLogoSrc(protocol: string): string | undefined {
+  return (protocolLogos as Record<string, string>)[protocol]
 }
 
 /** Dense row-per-vault list view. See plan/05 §6 (adapted as the primary view per user decision). */
@@ -51,8 +50,8 @@ export function VaultTable({ vaults }: VaultTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Vault</TableHead>
           <TableHead>Chain</TableHead>
+          <TableHead>Vault</TableHead>
           <TableHead>Category</TableHead>
           <TableHead className="text-right">TVL</TableHead>
           <TableHead className="text-right">Current APY</TableHead>
@@ -73,18 +72,26 @@ export function VaultTable({ vaults }: VaultTableProps) {
             }}
           >
             <TableCell>
+              <Avatar size="sm" title={vault.chainLabel}>
+                {chainLogoSrc(vault.chainLabel) && (
+                  <AvatarImage src={chainLogoSrc(vault.chainLabel)} alt={vault.chainLabel} />
+                )}
+                <AvatarFallback>{initials(vault.chainLabel)}</AvatarFallback>
+              </Avatar>
+            </TableCell>
+            <TableCell>
               <div className="flex items-center gap-3">
-                <Avatar size="sm">
-                  <AvatarFallback>{initials(vault.asset)}</AvatarFallback>
+                <Avatar size="sm" title={vault.protocol}>
+                  {protocolLogoSrc(vault.protocol) && (
+                    <AvatarImage src={protocolLogoSrc(vault.protocol)} alt={vault.protocol} />
+                  )}
+                  <AvatarFallback>{initials(vault.protocol)}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="font-medium text-foreground">{vault.name}</span>
                   <span className="text-xs text-muted-foreground">{vault.protocol}</span>
                 </div>
               </div>
-            </TableCell>
-            <TableCell>
-              <Badge variant="outline">{vault.chainLabel}</Badge>
             </TableCell>
             <TableCell className="text-muted-foreground">{vault.category}</TableCell>
             <TableCell className="text-right tabular-nums">{formatUsd(vault.tvlUsd)}</TableCell>
