@@ -17,7 +17,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ModalRoot } from "@/components/modals/ModalRoot"
 import { AllocationChart } from "@/components/portfolio/AllocationChart"
 import { PortfolioSummary } from "@/components/portfolio/PortfolioSummary"
-import { PositionsTable } from "@/components/portfolio/PositionsTable"
+import { PositionsTable, PositionsTotalsBar } from "@/components/portfolio/PositionsTable"
 import { computeAllocation, computePortfolioTotals } from "@/lib/portfolio"
 import { requireWalletConnected } from "@/lib/stake-gating"
 import { usePortfolioStore } from "@/stores/portfolio-store"
@@ -115,9 +115,20 @@ export function PortfolioView({ vaults }: PortfolioViewProps) {
         </p>
       </div>
 
-      <PortfolioSummary totals={totals} walletBalanceUsd={balanceUsd} />
+      <PortfolioSummary
+        totals={totals}
+        walletBalanceUsd={balanceUsd}
+        chart={
+          <Card className="h-full">
+            <CardContent className="flex h-full flex-col gap-2">
+              <h2 className="text-sm font-medium text-foreground">Allocation</h2>
+              <AllocationChart allocation={allocation} totalValue={totals.totalValue} />
+            </CardContent>
+          </Card>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="flex flex-col gap-3">
         <div className="overflow-hidden rounded-xl border bg-card">
           <PositionsTable
             positions={positions}
@@ -129,12 +140,9 @@ export function PortfolioView({ vaults }: PortfolioViewProps) {
           />
         </div>
 
-        <Card className="h-fit">
-          <CardContent className="flex flex-col gap-2">
-            <h2 className="text-sm font-medium text-foreground">Allocation</h2>
-            <AllocationChart allocation={allocation} totalValue={totals.totalValue} />
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border bg-card">
+          <PositionsTotalsBar totals={totals} />
+        </div>
       </div>
 
       <ModalRoot vaults={vaults} />

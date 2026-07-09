@@ -33,13 +33,19 @@ interface DepositPanelProps {
  * `Vaults_Stake_Poap` frame per the plan-vs-Figma Q&A: big amount readout
  * (no slider), a Network row, key/value projection rows (not prose), and
  * the "Real APY -> You receive" distribution table.
+ *
+ * The amount lives in `uiStore.depositAmount` rather than local state (same
+ * cross-component-sync pattern as `selectedProfile`) so a value typed into
+ * the `VaultActionPanel` sidebar carries straight in here when the modal
+ * opens. Cleared back to "" on a successful deposit.
  */
 export function DepositPanel({ vault, onDone }: DepositPanelProps) {
   const profile = useUiStore((state) => state.selectedProfile)
   const setProfile = useUiStore((state) => state.setProfile)
+  const amount = useUiStore((state) => state.depositAmount)
+  const setAmount = useUiStore((state) => state.setDepositAmount)
   const balanceUsd = useWalletStore((state) => state.balanceUsd)
 
-  const [amount, setAmount] = useState("")
   const [pending, setPending] = useState(false)
 
   const matured = vault.market.matured
@@ -67,18 +73,29 @@ export function DepositPanel({ vault, onDone }: DepositPanelProps) {
       description: `Tx ${hash.slice(0, 10)}\u2026`,
     })
     setPending(false)
+    setAmount("")
     onDone()
   }
 
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <div className="flex flex-col gap-1.5">
-        <span className="text-xs text-muted-foreground">Choose option</span>
-        <ProfileCardSelector value={profile} onValueChange={setProfile} className="max-w-full" disabled={pending} />
+      <AmountReadout
+        label={`Deposit ${vault.asset}`}
+        value={amount}
+        onChange={setAmount}
+        max={balanceUsd}
+        balanceLabel={formatBalanceLabel("Balance", balanceUsd)}
+        disabled={pending || matured}
+        error={error}
+      />
+
+      <div className="flex flex-col gap-1.5 border-t pt-4">
+        <span className="text-xs text-foreground">Choose option</span>
+        <ProfileCardSelector value={profile} onValueChange={setProfile} className="max-w-full" disabled={pending} vault={vault} />
       </div>
 
       <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">Network</span>
+        <span className="text-foreground">Network</span>
         <div className="flex items-center gap-1.5">
           <Avatar size="sm" title={vault.chainLabel}>
             {chainLogoSrc(vault.chainLabel) && (
@@ -92,52 +109,42 @@ export function DepositPanel({ vault, onDone }: DepositPanelProps) {
         </div>
       </div>
 
-      <AmountReadout
-        label={`Deposit ${vault.asset}`}
-        value={amount}
-        onChange={setAmount}
-        max={balanceUsd}
-        balanceLabel={formatBalanceLabel("Balance", balanceUsd)}
-        disabled={pending || matured}
-        error={error}
-      />
-
       <div className="flex flex-col gap-1.5 border-t pt-4 text-sm">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Deposit amount</span>
+          <span className="text-foreground">Deposit amount</span>
           <span className="font-medium text-foreground tabular-nums">{formatUsd(amountUsd)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">APY</span>
+          <span className="text-foreground">APY</span>
           <span className="font-medium text-foreground">{formatApy(headlineApyForProfile(vault, profile))}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Option</span>
+          <span className="text-foreground">Option</span>
           <span className="font-medium text-foreground">
             {profile.charAt(0).toUpperCase() + profile.slice(1)}
           </span>
         </div>
         {profile !== "standard" && (
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Target APY</span>
+            <span className="text-foreground">Target APY</span>
             <span className="font-medium text-foreground">{formatApy(vault.market.targetApy)}</span>
           </div>
         )}
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Est. value at {days}d</span>
+          <span className="text-foreground">Est. value at {days}d</span>
           <span className="font-medium text-foreground tabular-nums">{formatUsd(projectedValue)}</span>
         </div>
       </div>
 
-      <div className="border-t pt-4">
+      <div className="border-t pt-4 pb-2">
         <SettlementPreviewTable vault={vault} profile={profile} />
       </div>
 
       <DialogFooter>
-        <Button variant="outline" onClick={onDone} disabled={pending}>
+        <Button variant="outline" className="flex-1" onClick={onDone} disabled={pending}>
           Cancel
         </Button>
-        <Button onClick={handleConfirm} disabled={!valid || pending} aria-disabled={!valid || pending}>
+        <Button className="flex-1" onClick={handleConfirm} disabled={!valid || pending} aria-disabled={!valid || pending}>
           {pending ? (
             <>
               <Loader2Icon className="animate-spin" />

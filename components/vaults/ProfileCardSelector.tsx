@@ -2,14 +2,19 @@
 
 import { useEffect, useRef, useState } from "react"
 
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { ProfileExplainerContent } from "@/components/vaults/ProfileExplainer"
 import { cn } from "@/lib/utils"
 import { PROFILE_CLASSES, RISK_PROFILES, type RiskProfile } from "@/lib/profiles"
+import type { Vault } from "@/types"
 
 interface ProfileCardSelectorProps {
   value: RiskProfile
   onValueChange: (profile: RiskProfile) => void
   className?: string
   disabled?: boolean
+  /** When provided, the hover/tap explainer shows this vault's live APY numbers. */
+  vault?: Vault
 }
 
 /**
@@ -31,6 +36,7 @@ export function ProfileCardSelector({
   onValueChange,
   className,
   disabled,
+  vault,
 }: ProfileCardSelectorProps) {
   const [animateGeneration, setAnimateGeneration] = useState<Record<RiskProfile, number>>({
     stable: 0,
@@ -47,44 +53,57 @@ export function ProfileCardSelector({
   }, [value])
 
   return (
-    <div
-      role="radiogroup"
-      aria-label="Deposit type"
-      className={cn("grid w-full max-w-md grid-cols-3 gap-2", className)}
-    >
-      {RISK_PROFILES.map((profile) => {
-        const selected = value === profile.id
-        return (
-          <button
-            key={profile.id}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            aria-label={profile.label}
-            disabled={disabled}
-            onClick={() => onValueChange(profile.id)}
-            className={cn(
-              "flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border bg-card p-2 transition-colors disabled:pointer-events-none disabled:opacity-50",
-              selected ? SELECTED_CLASSES[profile.id] : "border-border hover:bg-muted/50"
-            )}
-          >
-            <ProfileCurveIcon
-              profile={profile.id}
-              selected={selected}
-              animationKey={animateGeneration[profile.id]}
-            />
-            <span
-              className={cn(
-                "text-sm font-medium",
-                selected ? PROFILE_CLASSES[profile.id].text : "text-muted-foreground"
-              )}
-            >
-              {profile.label}
-            </span>
-          </button>
-        )
-      })}
-    </div>
+    <TooltipProvider delay={250} closeDelay={0}>
+      <div
+        role="radiogroup"
+        aria-label="Deposit type"
+        className={cn("grid w-full max-w-md grid-cols-3 gap-2", className)}
+      >
+        {RISK_PROFILES.map((profile) => {
+          const selected = value === profile.id
+          return (
+            <Tooltip key={profile.id}>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    aria-label={profile.label}
+                    disabled={disabled}
+                    onClick={() => onValueChange(profile.id)}
+                    className={cn(
+                      "flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border bg-card p-2 transition-colors disabled:pointer-events-none disabled:opacity-50",
+                      selected ? SELECTED_CLASSES[profile.id] : "border-border hover:bg-muted/50"
+                    )}
+                  >
+                    <ProfileCurveIcon
+                      profile={profile.id}
+                      selected={selected}
+                      animationKey={animateGeneration[profile.id]}
+                    />
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        selected ? PROFILE_CLASSES[profile.id].text : "text-muted-foreground"
+                      )}
+                    >
+                      {profile.label}
+                    </span>
+                  </button>
+                }
+              />
+              <TooltipContent
+                side="top"
+                className="flex w-60 max-w-none flex-col items-stretch gap-0 p-3 text-left"
+              >
+                <ProfileExplainerContent profile={profile.id} vault={vault} />
+              </TooltipContent>
+            </Tooltip>
+          )
+        })}
+      </div>
+    </TooltipProvider>
   )
 }
 

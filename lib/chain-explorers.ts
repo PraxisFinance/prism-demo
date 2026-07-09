@@ -5,8 +5,8 @@
  * homepage rather than a specific (fake) contract page.
  */
 export interface ChainExplorer {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 const CHAIN_EXPLORERS: Record<string, ChainExplorer> = {
@@ -16,10 +16,10 @@ const CHAIN_EXPLORERS: Record<string, ChainExplorer> = {
   MegaETH: { name: "MegaETH Explorer", url: "https://mega.etherscan.io" },
   Mantle: { name: "Mantlescan", url: "https://mantlescan.xyz" },
   Katana: { name: "Katanascan", url: "https://katanascan.com" },
-}
+};
 
-const FALLBACK_EXPLORER: ChainExplorer = { name: "Explorer", url: "#" }
+const FALLBACK_EXPLORER: ChainExplorer = { name: "Explorer", url: "#" };
 
 export function getChainExplorer(chainLabel: string): ChainExplorer {
-  return CHAIN_EXPLORERS[chainLabel] ?? FALLBACK_EXPLORER
+  return CHAIN_EXPLORERS[chainLabel] ?? FALLBACK_EXPLORER;
 }

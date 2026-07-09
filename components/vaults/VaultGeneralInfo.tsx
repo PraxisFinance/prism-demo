@@ -1,10 +1,10 @@
-import { LabeledStat } from "@/components/common/LabeledStat"
-import { getChainExplorer } from "@/lib/chain-explorers"
-import { formatDate } from "@/lib/format"
-import type { Vault } from "@/types"
+import { LabeledStat } from "@/components/common/LabeledStat";
+import { getChainExplorer } from "@/lib/chain-explorers";
+import { formatDate } from "@/lib/format";
+import type { Vault } from "@/types";
 
 interface VaultGeneralInfoProps {
-  vault: Vault
+  vault: Vault;
 }
 
 /**
@@ -20,14 +20,19 @@ interface VaultGeneralInfoProps {
  * redesign's single bordered container. See plan/figma-mapping.md.
  */
 export function VaultGeneralInfo({ vault }: VaultGeneralInfoProps) {
-  const explorer = getChainExplorer(vault.chainLabel)
+  const explorer = getChainExplorer(vault.chainLabel);
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-heading text-base font-medium text-foreground">General information</h2>
+      <h2 className="font-heading text-base font-medium text-foreground">
+        General information
+      </h2>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <LabeledStat label="Curator" value={vault.curator} />
-        <LabeledStat label="Contract deployed" value={formatDate(vault.contractDeployedAt)} />
+        <LabeledStat
+          label="Contract deployed"
+          value={formatDate(vault.contractDeployedAt)}
+        />
         <LabeledStat label="Audited by" value={vault.auditFirm} />
         <LabeledStat label="Last audit" value={formatDate(vault.lastAuditAt)} />
       </div>
@@ -50,5 +55,5 @@ export function VaultGeneralInfo({ vault }: VaultGeneralInfoProps) {
         </a>
       </div>
     </div>
-  )
+  );
 }

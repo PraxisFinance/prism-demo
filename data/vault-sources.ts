@@ -1,4 +1,4 @@
-import type { VaultCategory } from "@/types"
+import type { VaultCategory } from "@/types";
 
 /**
  * Vault -> DeFiLlama pool configuration. This is the ONLY file to edit to
@@ -11,34 +11,34 @@ import type { VaultCategory } from "@/types"
  */
 export interface VaultSource {
   /** our slug, e.g. "base-steakusdc" */
-  id: string
+  id: string;
   /** DeFiLlama pool UUID (from /pools) */
-  poolId: string
+  poolId: string;
   /** display chain — should match the pool's real `chain` */
-  chainLabel: string
+  chainLabel: string;
   /** display protocol name, e.g. "Morpho Blue" */
-  protocol: string
+  protocol: string;
   /** vault name shown in the UI */
-  displayName: string
-  asset: string
-  assetName: string
-  category: VaultCategory
-  description: string
+  displayName: string;
+  asset: string;
+  assetName: string;
+  category: VaultCategory;
+  description: string;
   /** override the seeded default (30/60/90) */
-  marketDurationDays?: number
+  marketDurationDays?: number;
   /** pin this vault's market to already-settled, for demoing that state */
-  forceMatured?: boolean
+  forceMatured?: boolean;
   /**
    * Mock "General information" fields for the Vault Details redesign
    * (plan/06 §Figma) — Curators/audits aren't a DeFiLlama concept, so these
    * are invented, plausible-per-vault values rather than derived data.
    */
-  curator: string
+  curator: string;
   /** epoch ms */
-  contractDeployedAt: number
-  auditFirm: string
+  contractDeployedAt: number;
+  auditFirm: string;
   /** epoch ms */
-  lastAuditAt: number
+  lastAuditAt: number;
 }
 
 export const VAULT_SOURCES: VaultSource[] = [
@@ -208,4 +208,4 @@ export const VAULT_SOURCES: VaultSource[] = [
     auditFirm: "ChainSecurity",
     lastAuditAt: Date.UTC(2026, 0, 25),
   },
-]
+];

@@ -9,11 +9,11 @@
  * (papers/whitepaper/praxis_prism.tex).
  */
 
-import type { PoolHistoryPoint } from "@/lib/defillama"
+import type { PoolHistoryPoint } from "@/lib/defillama";
 
-export type RiskProfile = "stable" | "standard" | "elevated"
+export type RiskProfile = "stable" | "standard" | "elevated";
 
-export type VaultCategory = "Stablecoin" | "ETH" | "LST" | "RWA" | "Blue-chip"
+export type VaultCategory = "Stablecoin" | "ETH" | "LST" | "RWA" | "Blue-chip";
 
 /**
  * A vault's fixed-period Stable/Elevated market. `targetApy`/`protectionBuffer`
@@ -25,61 +25,61 @@ export type VaultCategory = "Stablecoin" | "ETH" | "LST" | "RWA" | "Blue-chip"
  */
 export interface VaultMarket {
   /** Neutral reference APY (%), set at market start from real trailing data. */
-  targetApy: number
+  targetApy: number;
   /** (%) How far below target Stable is still fully protected. */
-  protectionBuffer: number
+  protectionBuffer: number;
   /** targetApy - protectionBuffer (%). */
-  boundaryApy: number
+  boundaryApy: number;
   /** epoch ms — market start (T0). */
-  marketStartAt: number
+  marketStartAt: number;
   /** epoch ms — market end (T1). */
-  marketEndAt: number
+  marketEndAt: number;
   /** now >= marketEndAt. */
-  matured: boolean
+  matured: boolean;
   /** (%) Trailing realized APY from real data, T0..now (or final value once matured). */
-  realizedApySoFar: number
+  realizedApySoFar: number;
   /** (%) THE headline predicted APY implied by the current Stable/Elevated price. */
-  impliedApy: number
+  impliedApy: number;
   /** 0..1 — current market price of 1 Stable token. */
-  stablePrice: number
+  stablePrice: number;
   /** 0..1 — = 1 - stablePrice. */
-  elevatedPrice: number
+  elevatedPrice: number;
 }
 
 export interface Vault {
   /** slug, e.g. "base-steakusdc". */
-  id: string
+  id: string;
   /** display name, e.g. "Steakhouse USDC". */
-  name: string
+  name: string;
   /** "USDC". */
-  asset: string
+  asset: string;
   /** "USD Coin". */
-  assetName: string
+  assetName: string;
   /** "Morpho Blue". */
-  protocol: string
+  protocol: string;
   /** "BSC" | "Base" | "Avalanche" | "MegaETH" | "Mantle" | "Katana" | ... */
-  chainLabel: string
-  category: VaultCategory
+  chainLabel: string;
+  category: VaultCategory;
   /** From live/fallback DeFiLlama data. */
-  tvlUsd: number
+  tvlUsd: number;
   /** (%) Current spot APY — what a Standard deposit earns. */
-  currentApy: number
+  currentApy: number;
   /** 1-2 sentences. */
-  description: string
-  market: VaultMarket
+  description: string;
+  market: VaultMarket;
   /** Real daily series from DeFiLlama (live or fallback) — powers the "History & Performance" chart (plan/06 redesign). Not a forecast; purely historical. */
-  history: readonly PoolHistoryPoint[]
+  history: readonly PoolHistoryPoint[];
   /**
    * "General information" fields for the Vault Details redesign
    * (plan/06 §Figma). DeFiLlama has no API for these — invented per-vault
    * mock values on VaultSource (data/vault-sources.ts), not derived data.
    */
-  curator: string
+  curator: string;
   /** epoch ms */
-  contractDeployedAt: number
-  auditFirm: string
+  contractDeployedAt: number;
+  auditFirm: string;
   /** epoch ms */
-  lastAuditAt: number
+  lastAuditAt: number;
 }
 
 /**
@@ -91,13 +91,13 @@ export interface Vault {
  */
 export interface Position {
   /** uuid */
-  id: string
-  vaultId: string
-  profile: RiskProfile
+  id: string;
+  vaultId: string;
+  profile: RiskProfile;
   /** Amount deposited, in USD. */
-  principalUsd: number
+  principalUsd: number;
   /** epoch ms */
-  depositedAt: number
+  depositedAt: number;
   /** Stable-token price at entry; required iff profile !== 'standard'. */
-  entryPrice?: number
+  entryPrice?: number;
 }

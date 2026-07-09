@@ -8,7 +8,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -16,6 +15,7 @@ import {
 import { MaturityBadge } from "@/components/vaults/MaturityBadge"
 import { ProfileBadge } from "@/components/vaults/ProfileBadge"
 import { PercentDelta } from "@/components/common/PercentDelta"
+import { cn } from "@/lib/utils"
 import { protocolLogoSrc } from "@/lib/protocol-logos"
 import { formatApy, formatPrice, formatUsd } from "@/lib/format"
 import { currentValue, earnings, effectiveApyForPosition, type PortfolioTotals } from "@/lib/portfolio"
@@ -164,22 +164,54 @@ export function PositionsTable({
           )
         })}
       </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={2}>Total</TableCell>
-          <TableCell className="text-right tabular-nums">{formatUsd(totals.totalPrincipal)}</TableCell>
-          <TableCell className="text-right tabular-nums">{formatUsd(totals.totalValue)}</TableCell>
-          <TableCell className="text-right">
-            <span className={totals.totalEarnings >= 0 ? "text-positive" : "text-destructive"}>
-              {totals.totalEarnings >= 0 ? "+" : ""}
-              {formatUsd(totals.totalEarnings)}
-            </span>
-          </TableCell>
-          <TableCell className="text-right tabular-nums">{formatApy(totals.blendedApy * 100)}</TableCell>
-          <TableCell className="text-right tabular-nums">100%</TableCell>
-          <TableCell></TableCell>
-        </TableRow>
-      </TableFooter>
     </Table>
+  )
+}
+
+interface PositionsTotalsBarProps {
+  totals: PortfolioTotals
+}
+
+/**
+ * Aggregate row for the positions table (plan/08 §4 totals), rendered as its
+ * own bordered element (explicit user request) rather than a `TableFooter`
+ * merged into the table's border, since a `tfoot` row inside the same
+ * `<table>`/wrapper reads as part of one continuous block.
+ */
+export function PositionsTotalsBar({ totals }: PositionsTotalsBarProps) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 text-sm">
+      <span className="font-medium text-foreground">Total</span>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <TotalStat label="Principal" value={formatUsd(totals.totalPrincipal)} />
+        <TotalStat
+          label="Current value"
+          value={formatUsd(totals.totalValue)}
+          valueClassName="font-medium text-foreground"
+        />
+        <TotalStat
+          label="Earnings"
+          value={`${totals.totalEarnings >= 0 ? "+" : ""}${formatUsd(totals.totalEarnings)}`}
+          valueClassName={totals.totalEarnings >= 0 ? "text-positive" : "text-destructive"}
+        />
+        <TotalStat label="Effective APY" value={formatApy(totals.blendedApy * 100)} />
+        <TotalStat label="Allocation" value="100%" />
+      </div>
+    </div>
+  )
+}
+
+interface TotalStatProps {
+  label: string
+  value: string
+  valueClassName?: string
+}
+
+function TotalStat({ label, value, valueClassName }: TotalStatProps) {
+  return (
+    <div className="flex items-baseline gap-1.5">
+      <span className="text-muted-foreground">{label}</span>
+      <span className={cn("tabular-nums", valueClassName)}>{value}</span>
+    </div>
   )
 }

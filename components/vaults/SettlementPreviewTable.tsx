@@ -34,7 +34,7 @@ export function SettlementPreviewTable({ vault, profile }: SettlementPreviewTabl
     <div className="flex flex-col gap-2">
       <span className="text-xs text-muted-foreground">Expected performance</span>
       <div className="overflow-hidden rounded-lg border text-xs">
-        <div className="grid grid-cols-6 gap-1 bg-muted/60 px-2 py-1.5 font-medium text-muted-foreground">
+        <div className="grid grid-cols-6 gap-1 bg-muted/60 px-2 py-1.5 font-medium text-foreground">
           <span className="col-span-1">Real APY</span>
           {PREVIEW_REALIZED_APYS.map((x) => (
             <span key={x} className="text-right tabular-nums">
@@ -43,7 +43,7 @@ export function SettlementPreviewTable({ vault, profile }: SettlementPreviewTabl
           ))}
         </div>
         <div className="grid grid-cols-6 gap-1 px-2 py-1.5">
-          <span className="col-span-1 text-muted-foreground">You receive</span>
+          <span className="col-span-1 text-foreground">You receive</span>
           {PREVIEW_REALIZED_APYS.map((x) => (
             <span key={x} className="text-right font-medium tabular-nums text-foreground">
               {settle(x, params).toFixed(1)}%

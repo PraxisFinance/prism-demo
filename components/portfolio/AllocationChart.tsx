@@ -98,10 +98,10 @@ export function AllocationChart({ allocation, totalValue }: AllocationChartProps
               const { cx, cy } = viewBox
               return (
                 <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
-                  <tspan x={cx} y={cy} className="fill-foreground text-2xl font-heading font-medium">
+                  <tspan x={cx} y={(cy ?? 0) - 11} className="fill-foreground text-2xl font-heading font-medium">
                     {formatUsd(totalValue)}
                   </tspan>
-                  <tspan x={cx} y={(cy ?? 0) + 22} className="fill-muted-foreground text-xs">
+                  <tspan x={cx} y={(cy ?? 0) + 11} className="fill-muted-foreground text-xs">
                     Total value
                   </tspan>
                 </text>

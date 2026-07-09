@@ -99,30 +99,6 @@ export function WithdrawPanel({ vault, initialPositionId, onDone }: WithdrawPane
 
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <div className="flex flex-col gap-3 rounded-lg border p-3">
-        <div className="flex items-center justify-between">
-          <ProfileBadge profile={position.profile} />
-          <PercentDelta value={apy} />
-        </div>
-        <div className="flex items-baseline justify-between">
-          <span className="text-xs text-muted-foreground">Current value</span>
-          <span className="font-heading text-lg font-medium tabular-nums text-foreground">
-            {formatUsd(value)}
-          </span>
-        </div>
-        <div className="flex items-baseline justify-between text-sm">
-          <span className="text-muted-foreground">Principal</span>
-          <span className="tabular-nums text-foreground">{formatUsd(position.principalUsd)}</span>
-        </div>
-        <div className="flex items-baseline justify-between text-sm">
-          <span className="text-muted-foreground">Earnings</span>
-          <span className={gain >= 0 ? "tabular-nums text-positive" : "tabular-nums text-destructive"}>
-            {gain >= 0 ? "+" : ""}
-            {formatUsd(gain)}
-          </span>
-        </div>
-      </div>
-
       <AmountReadout
         label="Withdraw amount"
         value={amount}
@@ -133,22 +109,46 @@ export function WithdrawPanel({ vault, initialPositionId, onDone }: WithdrawPane
         error={error}
       />
 
+      <div className="flex flex-col gap-3 rounded-lg border p-3">
+        <div className="flex items-center justify-between">
+          <ProfileBadge profile={position.profile} />
+          <PercentDelta value={apy} />
+        </div>
+        <div className="flex items-baseline justify-between">
+          <span className="text-xs text-foreground">Current value</span>
+          <span className="font-heading text-lg font-medium tabular-nums text-foreground">
+            {formatUsd(value)}
+          </span>
+        </div>
+        <div className="flex items-baseline justify-between text-sm">
+          <span className="text-foreground">Principal</span>
+          <span className="tabular-nums text-foreground">{formatUsd(position.principalUsd)}</span>
+        </div>
+        <div className="flex items-baseline justify-between text-sm">
+          <span className="text-foreground">Earnings</span>
+          <span className={gain >= 0 ? "tabular-nums text-positive" : "tabular-nums text-destructive"}>
+            {gain >= 0 ? "+" : ""}
+            {formatUsd(gain)}
+          </span>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-1.5 border-t pt-4 text-sm">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Remaining in vault</span>
+          <span className="text-foreground">Remaining in vault</span>
           <span className="font-medium text-foreground tabular-nums">{formatUsd(remaining)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Returned to wallet</span>
+          <span className="text-foreground">Returned to wallet</span>
           <span className="font-medium text-foreground tabular-nums">{formatUsd(amountUsd)}</span>
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="outline" onClick={onDone} disabled={pending}>
+        <Button variant="outline" className="flex-1" onClick={onDone} disabled={pending}>
           Cancel
         </Button>
-        <Button onClick={handleConfirm} disabled={!valid || pending} aria-disabled={!valid || pending}>
+        <Button className="flex-1" onClick={handleConfirm} disabled={!valid || pending} aria-disabled={!valid || pending}>
           {pending ? (
             <>
               <Loader2Icon className="animate-spin" />

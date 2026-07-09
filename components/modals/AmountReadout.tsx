@@ -43,8 +43,31 @@ export function AmountReadout({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs text-foreground">{label}</span>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-1 items-baseline gap-1">
+          <span
+            className={cn(
+              "font-heading text-3xl font-medium text-muted-foreground",
+              value && "text-foreground"
+            )}
+          >
+            $
+          </span>
+          <input
+            inputMode="decimal"
+            placeholder="0.00"
+            value={value}
+            disabled={disabled}
+            onChange={(e) => handleChange(e.target.value)}
+            aria-label={label}
+            aria-invalid={!!error}
+            className={cn(
+              "w-full min-w-0 bg-transparent font-heading text-3xl font-medium text-foreground tabular-nums outline-none placeholder:text-muted-foreground",
+              "disabled:cursor-not-allowed disabled:opacity-50"
+            )}
+          />
+        </div>
         <Button
           type="button"
           variant="secondary"
@@ -54,29 +77,6 @@ export function AmountReadout({
         >
           MAX
         </Button>
-      </div>
-      <div className="flex items-baseline gap-1">
-        <span
-          className={cn(
-            "font-heading text-3xl font-medium text-muted-foreground",
-            value && "text-foreground"
-          )}
-        >
-          $
-        </span>
-        <input
-          inputMode="decimal"
-          placeholder="0.00"
-          value={value}
-          disabled={disabled}
-          onChange={(e) => handleChange(e.target.value)}
-          aria-label={label}
-          aria-invalid={!!error}
-          className={cn(
-            "w-full min-w-0 bg-transparent font-heading text-3xl font-medium text-foreground tabular-nums outline-none placeholder:text-muted-foreground",
-            "disabled:cursor-not-allowed disabled:opacity-50"
-          )}
-        />
       </div>
       {error ? (
         <p className="text-xs text-destructive">{error}</p>
