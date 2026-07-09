@@ -107,7 +107,7 @@ function ComparativeCurve({ profile }: { profile: RiskProfile }) {
               "stroke-current",
               active
                 ? cn("profile-curve profile-curve-draw", PROFILE_CLASSES[meta.id].text)
-                : "text-background/20"
+                : "text-foreground/20"
             )}
           />
         )
@@ -120,12 +120,12 @@ function ScenarioRow({ scenario, direction }: { scenario: Scenario; direction: "
   const Icon = direction === "up" ? TrendingUpIcon : TrendingDownIcon
   return (
     <div className="flex items-start gap-2">
-      <Icon className="mt-0.5 size-3.5 shrink-0 text-background/70" aria-hidden="true" />
+      <Icon className="mt-0.5 size-3.5 shrink-0 text-foreground/70" aria-hidden="true" />
       <div className="flex flex-col leading-tight">
-        <span className="text-[10px] font-medium uppercase tracking-wide text-background/50">
+        <span className="text-[10px] font-medium uppercase tracking-wide text-foreground/50">
           {scenario.label}
         </span>
-        <span className="text-xs text-background">{scenario.outcome}</span>
+        <span className="text-xs text-foreground">{scenario.outcome}</span>
       </div>
     </div>
   )
@@ -133,7 +133,7 @@ function ScenarioRow({ scenario, direction }: { scenario: Scenario; direction: "
 
 /**
  * Inner body for a tooltip explaining a single deposit type. Meant to be
- * dropped inside `TooltipContent` (which supplies the dark surface + arrow).
+ * dropped inside `TooltipContent` (which supplies the light surface + arrow).
  */
 export function ProfileExplainerContent({
   profile,
@@ -146,13 +146,13 @@ export function ProfileExplainerContent({
 
   return (
     <div className="flex flex-col gap-2.5">
-      <p className="text-xs text-background/80">{explainer.tagline}</p>
+      <p className="text-xs text-foreground/80">{explainer.tagline}</p>
       <ComparativeCurve profile={profile} />
-      <div className="flex items-center justify-between text-[9px] font-medium uppercase tracking-wide text-background/40">
+      <div className="flex items-center justify-between text-[9px] font-medium uppercase tracking-wide text-foreground/40">
         <span>Lower APY</span>
         <span>Higher APY</span>
       </div>
-      <div className="flex flex-col gap-2 border-t border-background/15 pt-2.5">
+      <div className="flex flex-col gap-2 border-t border-foreground/15 pt-2.5">
         <ScenarioRow scenario={explainer.down} direction="down" />
         <ScenarioRow scenario={explainer.up} direction="up" />
       </div>
