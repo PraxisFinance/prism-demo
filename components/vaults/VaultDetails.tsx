@@ -61,8 +61,9 @@ function initials(name: string): string {
  *  2. Everything Prism-specific that the source design doesn't cover
  *     (single-number market summary, settlement graphic showing all 3
  *     deposit types at once) — kept as its own "Prism market" section
- *     below, per plan/06 §4-§8. Its right column is intentionally left
- *     empty (grid track kept so the left column's width doesn't change).
+ *     below, per plan/06 §4-§8. It reserves the same `lg:pr-[384px]`
+ *     right-hand space as section 1 so both sections' content lines up
+ *     to the same width, even though section 2 has no right column.
  */
 export function VaultDetails({ vault }: VaultDetailsProps) {
   const selectedProfile = useUiStore((state) => state.selectedProfile);
@@ -111,8 +112,14 @@ export function VaultDetails({ vault }: VaultDetailsProps) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* ---- Section 1: structural match of the Figma VaultDetails design ---- */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+      {/* ---- Section 1: structural match of the Figma VaultDetails design ----
+          The right column (action panel + position cards) is taken out of
+          flow on lg+ (absolute, positioned against this relative wrapper)
+          so its height never affects the left card's height nor pushes the
+          "Prism market" section below — the two columns are fully
+          independent. `lg:pr-[384px]` (360px column + 24px gap) reserves
+          the visual space on the left card so text doesn't run under it. */}
+      <div className="relative lg:pr-[384px]">
         <Card>
           <CardContent className="flex flex-col gap-6">
             <div className="flex flex-col gap-1.5">
@@ -162,7 +169,7 @@ export function VaultDetails({ vault }: VaultDetailsProps) {
           </CardContent>
         </Card>
 
-        <div className="flex flex-col gap-6 self-start">
+        <div className="mt-6 flex flex-col gap-6 lg:absolute lg:right-0 lg:top-0 lg:mt-0 lg:w-[360px]">
           <VaultActionPanel
             vault={vault}
             profile={selectedProfile}
@@ -196,7 +203,7 @@ export function VaultDetails({ vault }: VaultDetailsProps) {
       </div>
 
       {/* ---- Section 2: Prism-specific content, not part of the source design ---- */}
-      <div className="flex flex-col gap-6 border-t pt-8">
+      <div className="flex flex-col gap-6">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-heading text-lg font-medium text-foreground">
             Prism market
@@ -205,12 +212,10 @@ export function VaultDetails({ vault }: VaultDetailsProps) {
           <Badge variant="outline">{vault.category}</Badge>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="flex flex-col gap-6">
-            <MarketSummary vault={vault} />
-            <div className="rounded-xl border bg-card p-6">
-              <SettlementCurveChart vault={vault} />
-            </div>
+        <div className="flex flex-col gap-6 lg:pr-[384px]">
+          <MarketSummary vault={vault} />
+          <div className="rounded-xl border bg-card p-6">
+            <SettlementCurveChart vault={vault} />
           </div>
         </div>
       </div>

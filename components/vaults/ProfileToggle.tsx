@@ -1,5 +1,7 @@
 "use client"
 
+import { CircleHelp } from "lucide-react"
+
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ProfileExplainerContent } from "@/components/vaults/ProfileExplainer"
@@ -47,11 +49,15 @@ export function ProfileToggle({
                   value={profile.id}
                   aria-label={profile.label}
                   className={cn(
-                    "rounded-lg px-4 font-medium text-muted-foreground data-pressed:bg-card data-pressed:shadow-sm",
+                    "relative rounded-lg px-4 font-medium text-muted-foreground data-pressed:bg-card data-pressed:shadow-sm",
                     value === profile.id && PROFILE_CLASSES[profile.id].text
                   )}
                 >
                   {profile.label}
+                  <CircleHelp
+                    aria-hidden="true"
+                    className="absolute right-0.5 top-0.5 size-2.5 text-muted-foreground/60"
+                  />
                 </ToggleGroupItem>
               }
             />

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { CircleHelp } from "lucide-react"
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ProfileExplainerContent } from "@/components/vaults/ProfileExplainer"
@@ -73,10 +74,14 @@ export function ProfileCardSelector({
                     disabled={disabled}
                     onClick={() => onValueChange(profile.id)}
                     className={cn(
-                      "flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border bg-card p-2 transition-colors disabled:pointer-events-none disabled:opacity-50",
+                      "relative flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border bg-card p-2 transition-colors disabled:pointer-events-none disabled:opacity-50",
                       selected ? SELECTED_CLASSES[profile.id] : "border-border hover:bg-muted/50"
                     )}
                   >
+                    <CircleHelp
+                      aria-hidden="true"
+                      className="absolute right-1.5 top-1.5 size-3 text-muted-foreground/60"
+                    />
                     <ProfileCurveIcon
                       profile={profile.id}
                       selected={selected}

@@ -1,6 +1,5 @@
 import { LabeledStat } from "@/components/common/LabeledStat"
 import { PercentDelta } from "@/components/common/PercentDelta"
-import { StatCard } from "@/components/common/StatCard"
 import { formatApy, formatDate, formatPrice } from "@/lib/format"
 import { daysUntil } from "@/lib/vault-filters"
 import type { Vault } from "@/types"
@@ -28,30 +27,28 @@ export function MarketSummary({ vault }: MarketSummaryProps) {
 
   return (
     <div className="flex flex-col gap-5 rounded-xl border bg-card p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <StatCard
-          className="ring-0 p-0"
-          label="Predicted APY"
-          value={
-            <span className="font-heading text-4xl font-semibold text-primary">
-              {formatApy(market.impliedApy)}
-            </span>
-          }
-          delta={
-            <span className="text-sm text-muted-foreground">
-              Stable {formatPrice(market.stablePrice)} · Elevated {formatPrice(market.elevatedPrice)}
-            </span>
-          }
-        />
-        <div className="flex flex-col items-end gap-1.5">
-          <span className="text-xs text-muted-foreground">Current APY</span>
-          <div className="flex items-center gap-2">
-            <span className="font-medium tabular-nums text-foreground">
-              {formatApy(vault.currentApy)}
-            </span>
-            <PercentDelta value={deltaVsCurrent} />
-          </div>
+      {/* Grid (not two separate flex columns) so each row lines up exactly
+          across both columns — row 1 labels, row 2 the two APY numbers,
+          row 3 the Stable/Elevated prices (with row 3 col 2 left empty). */}
+      <div className="grid grid-cols-[auto_auto] items-baseline justify-between gap-x-4 gap-y-1.5">
+        <span className="text-sm text-muted-foreground">Predicted APY</span>
+        <span className="justify-self-end text-xs text-muted-foreground">
+          Current APY
+        </span>
+
+        <span className="font-heading text-4xl font-semibold text-primary">
+          {formatApy(market.impliedApy)}
+        </span>
+        <div className="flex items-center gap-2 justify-self-end">
+          <span className="font-medium tabular-nums text-foreground">
+            {formatApy(vault.currentApy)}
+          </span>
+          <PercentDelta value={deltaVsCurrent} />
         </div>
+
+        <span className="text-sm text-muted-foreground">
+          Stable {formatPrice(market.stablePrice)} · Elevated {formatPrice(market.elevatedPrice)}
+        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-3">
