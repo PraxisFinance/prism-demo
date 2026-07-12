@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, PieChart } from "lucide-react";
+import { BookOpen, PieChart, Sparkles } from "lucide-react";
 
 import { VaultIcon } from "@/components/icons/vault-icon";
 import { ConnectWalletButton } from "@/components/layout/ConnectWalletButton";
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/vaults", label: "Vaults", icon: VaultIcon },
   { href: "/portfolio", label: "Portfolio", icon: PieChart },
   { href: "/how-it-works", label: "How it works", icon: BookOpen },
+  { href: "/why-praxis", label: "Why Praxis", icon: Sparkles },
 ] as const;
 
 export function Header() {

@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import type { CSSProperties, ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react";
 
-import { useInView } from "@/lib/use-in-view"
-import { cn } from "@/lib/utils"
+import { useInView } from "@/lib/use-in-view";
+import { cn } from "@/lib/utils";
 
 interface RevealProps {
-  children: ReactNode
+  children: ReactNode;
   /** Stagger delay in milliseconds. */
-  delay?: number
-  className?: string
+  delay?: number;
+  className?: string;
 }
 
 /**
@@ -18,7 +18,7 @@ interface RevealProps {
  * where content is shown in its final state. See plan/09 §7.
  */
 export function Reveal({ children, delay = 0, className }: RevealProps) {
-  const { ref, inView } = useInView<HTMLDivElement>(0.2, true)
+  const { ref, inView } = useInView<HTMLDivElement>(0.2, true);
 
   return (
     <div
@@ -32,7 +32,7 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
     >
       {children}
     </div>
-  )
+  );
 }
 
 /** Convenience wrapper for a full-width reveal region. */
@@ -41,5 +41,5 @@ export function RevealBlock({ children, delay, className }: RevealProps) {
     <Reveal delay={delay} className={cn("w-full", className)}>
       {children}
     </Reveal>
-  )
+  );
 }

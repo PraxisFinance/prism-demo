@@ -146,7 +146,13 @@ function ProfileCurveIcon({
   animationKey: number
 }) {
   return (
-    <svg viewBox="0 0 120 56" className="h-auto w-full max-w-16" aria-hidden="true">
+    <svg
+      viewBox="0 0 120 56"
+      width="120"
+      height="56"
+      className="h-auto w-full max-w-16"
+      aria-hidden="true"
+    >
       <path
         key={animationKey}
         d={CURVE_PATHS[profile]}

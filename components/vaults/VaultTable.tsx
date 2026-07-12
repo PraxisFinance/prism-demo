@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,18 @@ import { formatApy, formatUsd } from "@/lib/format";
 import { chainLogoSrc } from "@/lib/chain-logos";
 import { protocolLogoSrc } from "@/lib/protocol-logos";
 import { requireWalletConnected } from "@/lib/stake-gating";
+import { cn } from "@/lib/utils";
 import { MaturityBadge } from "@/components/vaults/MaturityBadge";
 import { useUiStore } from "@/stores/ui-store";
 import { useWalletStore } from "@/stores/wallet-store";
+import { SORT_OPTIONS, type SortDirection, type SortKey } from "@/lib/vault-filters";
 import type { Vault } from "@/types";
 
 interface VaultTableProps {
   vaults: readonly Vault[];
+  sortKey: SortKey;
+  sortDirection: SortDirection;
+  onSortChange: (key: SortKey) => void;
 }
 
 function initials(name: string): string {
@@ -34,8 +40,51 @@ function initials(name: string): string {
     .join("");
 }
 
+interface SortableHeadProps {
+  label: string;
+  sortKey: SortKey;
+  activeSortKey: SortKey;
+  sortDirection: SortDirection;
+  onSortChange: (key: SortKey) => void;
+}
+
+/** A right-aligned TableHead that doubles as a sort control — replaces the old toolbar Sort dropdown. */
+function SortableHead({
+  label,
+  sortKey,
+  activeSortKey,
+  sortDirection,
+  onSortChange,
+}: SortableHeadProps) {
+  const isActive = sortKey === activeSortKey;
+  return (
+    <TableHead className="text-right">
+      <button
+        type="button"
+        onClick={() => onSortChange(sortKey)}
+        className={cn(
+          "inline-flex w-full items-center justify-end gap-1 outline-none",
+          isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+        )}
+        aria-label={`Sort by ${label}`}
+      >
+        {label}
+        {isActive ? (
+          sortDirection === "asc" ? (
+            <ArrowUp className="size-3.5" />
+          ) : (
+            <ArrowDown className="size-3.5" />
+          )
+        ) : (
+          <ArrowUpDown className="size-3.5 opacity-40" />
+        )}
+      </button>
+    </TableHead>
+  );
+}
+
 /** Dense row-per-vault list view. See plan/05 §6 (adapted as the primary view per user decision). */
-export function VaultTable({ vaults }: VaultTableProps) {
+export function VaultTable({ vaults, sortKey, sortDirection, onSortChange }: VaultTableProps) {
   const router = useRouter();
   const connected = useWalletStore((state) => state.connected);
   const openDeposit = useUiStore((state) => state.openDeposit);
@@ -47,10 +96,16 @@ export function VaultTable({ vaults }: VaultTableProps) {
           <TableHead>Chain</TableHead>
           <TableHead>Vault</TableHead>
           <TableHead>Category</TableHead>
-          <TableHead className="text-right">TVL</TableHead>
-          <TableHead className="text-right">Current APY</TableHead>
-          <TableHead className="text-right">Predicted APY</TableHead>
-          <TableHead className="text-right">Maturity</TableHead>
+          {SORT_OPTIONS.map((option) => (
+            <SortableHead
+              key={option.id}
+              label={option.label}
+              sortKey={option.id}
+              activeSortKey={sortKey}
+              sortDirection={sortDirection}
+              onSortChange={onSortChange}
+            />
+          ))}
           <TableHead className="text-right"></TableHead>
         </TableRow>
       </TableHeader>
@@ -107,7 +162,11 @@ export function VaultTable({ vaults }: VaultTableProps) {
               {formatApy(vault.currentApy)}
             </TableCell>
             <TableCell className="text-right font-medium tabular-nums text-foreground">
-              {formatApy(vault.market.impliedApy)}
+              {vault.market.matured ? (
+                <span className="text-muted-foreground">{"\u2014"}</span>
+              ) : (
+                formatApy(vault.market.impliedApy)
+              )}
             </TableCell>
             <TableCell className="text-right">
               <MaturityBadge vault={vault} />

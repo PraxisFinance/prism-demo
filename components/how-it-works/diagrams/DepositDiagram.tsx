@@ -42,6 +42,8 @@ export function DepositDiagram() {
         {/* Flow connector */}
         <svg
           viewBox="0 0 120 24"
+          width="120"
+          height="24"
           className="h-6 w-24 rotate-90 text-primary sm:rotate-0"
           fill="none"
           aria-hidden

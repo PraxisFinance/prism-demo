@@ -1,4 +1,5 @@
 import { formatApy, formatUsd } from "@/lib/format"
+import { cn } from "@/lib/utils"
 import type { Vault } from "@/types"
 
 interface VaultStatsRowProps {
@@ -21,17 +22,23 @@ function Stat({ label, value }: { label: string; value: string }) {
  * from `tvlUsd` rather than inventing a second number. See plan/06 redesign
  * Q&A.
  *
+ * Predicted APY is dropped once the market has matured — it's a forecast
+ * (`market.impliedApy`) that can diverge from the now-realized `currentApy`,
+ * which would read as a bug rather than a feature once there's nothing left
+ * to predict.
+ *
  * Plain label/value pairs (no individual card/border) — Figma shows these
  * sitting directly on the shared "info card" surface, not as separate
  * boxed stat cards. See plan/figma-mapping.md.
  */
 export function VaultStatsRow({ vault }: VaultStatsRowProps) {
+  const matured = vault.market.matured
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className={cn("grid grid-cols-2 gap-4", matured ? "sm:grid-cols-3" : "sm:grid-cols-4")}>
       <Stat label="Total Deposits" value={formatUsd(vault.tvlUsd)} />
       <Stat label="Liquidity" value={formatUsd(vault.tvlUsd)} />
       <Stat label="Current APY" value={formatApy(vault.currentApy)} />
-      <Stat label="Predicted APY" value={formatApy(vault.market.impliedApy)} />
+      {!matured && <Stat label="Predicted APY" value={formatApy(vault.market.impliedApy)} />}
     </div>
   )
 }

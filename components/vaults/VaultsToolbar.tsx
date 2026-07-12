@@ -12,10 +12,9 @@ import {
 } from "@/components/ui/select"
 import {
   ALL_CATEGORIES,
+  ALL_CHAINS,
   CATEGORY_OPTIONS,
-  SORT_OPTIONS,
   type CategoryFilter,
-  type SortKey,
 } from "@/lib/vault-filters"
 
 interface VaultsToolbarProps {
@@ -26,13 +25,21 @@ interface VaultsToolbarProps {
   chainLabel: string
   onChainLabelChange: (value: string) => void
   chainOptions: readonly string[]
-  sortKey: SortKey
-  onSortKeyChange: (value: SortKey) => void
+}
+
+/** The sentinel "All" value reads as its filter's name ("Chain"/"Type") instead of the unrepresentative literal "All". */
+function categoryOptionLabel(option: CategoryFilter): string {
+  return option === ALL_CATEGORIES ? "Type" : option
+}
+
+function chainOptionLabel(option: string): string {
+  return option === ALL_CHAINS ? "Chain" : option
 }
 
 /**
- * Search + category/chain filters + sort. Fully controlled — all state
- * lives in VaultsExplorer. See plan/05 §2.
+ * Search + category/chain filters. Fully controlled — all state lives in
+ * VaultsExplorer. Sorting now lives on the table's own clickable column
+ * headers (see VaultTable), not here. See plan/05 §2.
  */
 export function VaultsToolbar({
   search,
@@ -42,8 +49,6 @@ export function VaultsToolbar({
   chainLabel,
   onChainLabelChange,
   chainOptions,
-  sortKey,
-  onSortKeyChange,
 }: VaultsToolbarProps) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -62,15 +67,18 @@ export function VaultsToolbar({
         <Select
           value={category}
           onValueChange={(value) => onCategoryChange(value as CategoryFilter)}
-          items={CATEGORY_OPTIONS.map((option) => ({ value: option, label: option }))}
+          items={CATEGORY_OPTIONS.map((option) => ({
+            value: option,
+            label: categoryOptionLabel(option),
+          }))}
         >
-          <SelectTrigger aria-label="Filter by category">
-            <SelectValue placeholder={ALL_CATEGORIES} />
+          <SelectTrigger aria-label="Filter by type">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {CATEGORY_OPTIONS.map((option) => (
               <SelectItem key={option} value={option}>
-                {option}
+                {categoryOptionLabel(option)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -79,7 +87,10 @@ export function VaultsToolbar({
         <Select
           value={chainLabel}
           onValueChange={(value) => onChainLabelChange(value as string)}
-          items={chainOptions.map((option) => ({ value: option, label: option }))}
+          items={chainOptions.map((option) => ({
+            value: option,
+            label: chainOptionLabel(option),
+          }))}
         >
           <SelectTrigger aria-label="Filter by chain">
             <SelectValue />
@@ -87,24 +98,7 @@ export function VaultsToolbar({
           <SelectContent>
             {chainOptions.map((option) => (
               <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={sortKey}
-          onValueChange={(value) => onSortKeyChange(value as SortKey)}
-          items={SORT_OPTIONS.map((option) => ({ value: option.id, label: option.label }))}
-        >
-          <SelectTrigger aria-label="Sort vaults">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {SORT_OPTIONS.map((option) => (
-              <SelectItem key={option.id} value={option.id}>
-                {option.label}
+                {chainOptionLabel(option)}
               </SelectItem>
             ))}
           </SelectContent>

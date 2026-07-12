@@ -202,6 +202,31 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* "Why Praxis" hub-and-spoke page (plan/10-why-praxis.md §8)          */
+/* ------------------------------------------------------------------ */
+
+/* View transition: each view (hub / segment / cta) zooms + fades in when it
+   becomes active. Remounting on view change replays the animation. Disabled
+   under reduced motion, where views swap instantly. */
+@media (prefers-reduced-motion: no-preference) {
+  .why-view {
+    animation: why-view-in 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: center top;
+    will-change: opacity, transform;
+  }
+}
+@keyframes why-view-in {
+  from {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Standard/Stable/Elevated card selector (components/vaults/ProfileCardSelector.tsx) */
 /* ------------------------------------------------------------------ */
 

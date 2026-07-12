@@ -29,27 +29,42 @@ export function MarketSummary({ vault }: MarketSummaryProps) {
     <div className="flex flex-col gap-5 rounded-xl border bg-card p-6">
       {/* Grid (not two separate flex columns) so each row lines up exactly
           across both columns — row 1 labels, row 2 the two APY numbers,
-          row 3 the Stable/Elevated prices (with row 3 col 2 left empty). */}
-      <div className="grid grid-cols-[auto_auto] items-baseline justify-between gap-x-4 gap-y-1.5">
-        <span className="text-sm text-muted-foreground">Predicted APY</span>
-        <span className="justify-self-end text-xs text-muted-foreground">
-          Current APY
-        </span>
-
-        <span className="font-heading text-4xl font-semibold text-primary">
-          {formatApy(market.impliedApy)}
-        </span>
-        <div className="flex items-center gap-2 justify-self-end">
-          <span className="font-medium tabular-nums text-foreground">
+          row 3 the Stable/Elevated prices (with row 3 col 2 left empty).
+          Once matured there's nothing left to predict (and the forecast
+          can diverge from the now-realized currentApy), so the headline
+          collapses to a single Current APY number instead. */}
+      {market.matured ? (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm text-muted-foreground">Current APY</span>
+          <span className="font-heading text-4xl font-semibold text-primary">
             {formatApy(vault.currentApy)}
           </span>
-          <PercentDelta value={deltaVsCurrent} />
+          <span className="text-sm text-muted-foreground">
+            Stable {formatPrice(market.stablePrice)} · Elevated {formatPrice(market.elevatedPrice)}
+          </span>
         </div>
+      ) : (
+        <div className="grid grid-cols-[auto_auto] items-baseline justify-between gap-x-4 gap-y-1.5">
+          <span className="text-sm text-muted-foreground">Predicted APY</span>
+          <span className="justify-self-end text-xs text-muted-foreground">
+            Current APY
+          </span>
 
-        <span className="text-sm text-muted-foreground">
-          Stable {formatPrice(market.stablePrice)} · Elevated {formatPrice(market.elevatedPrice)}
-        </span>
-      </div>
+          <span className="font-heading text-4xl font-semibold text-primary">
+            {formatApy(market.impliedApy)}
+          </span>
+          <div className="flex items-center gap-2 justify-self-end">
+            <span className="font-medium tabular-nums text-foreground">
+              {formatApy(vault.currentApy)}
+            </span>
+            <PercentDelta value={deltaVsCurrent} />
+          </div>
+
+          <span className="text-sm text-muted-foreground">
+            Stable {formatPrice(market.stablePrice)} · Elevated {formatPrice(market.elevatedPrice)}
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4 border-t pt-4 sm:grid-cols-3">
         <LabeledStat label="Target APY" value={formatApy(market.targetApy)} />

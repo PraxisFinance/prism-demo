@@ -18,10 +18,12 @@ import { VaultsToolbar } from "@/components/vaults/VaultsToolbar"
 import {
   ALL_CATEGORIES,
   ALL_CHAINS,
+  DEFAULT_SORT_DIRECTIONS,
   filterVaults,
   getChainOptions,
   sortVaults,
   type CategoryFilter,
+  type SortDirection,
   type SortKey,
 } from "@/lib/vault-filters"
 import type { Vault } from "@/types"
@@ -47,13 +49,16 @@ export function VaultsExplorer({ vaults }: VaultsExplorerProps) {
   const [category, setCategory] = useState<CategoryFilter>(DEFAULT_FILTERS.category)
   const [chainLabel, setChainLabel] = useState(DEFAULT_FILTERS.chainLabel)
   const [sortKey, setSortKey] = useState<SortKey>(DEFAULT_FILTERS.sortKey)
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    DEFAULT_SORT_DIRECTIONS[DEFAULT_FILTERS.sortKey]
+  )
 
   const chainOptions = useMemo(() => getChainOptions(vaults), [vaults])
 
   const visibleVaults = useMemo(() => {
     const filtered = filterVaults(vaults, { search, category, chainLabel })
-    return sortVaults(filtered, sortKey)
-  }, [vaults, search, category, chainLabel, sortKey])
+    return sortVaults(filtered, sortKey, sortDirection)
+  }, [vaults, search, category, chainLabel, sortKey, sortDirection])
 
   const chainCount = chainOptions.length - 1
 
@@ -61,6 +66,16 @@ export function VaultsExplorer({ vaults }: VaultsExplorerProps) {
     setSearch(DEFAULT_FILTERS.search)
     setCategory(DEFAULT_FILTERS.category)
     setChainLabel(DEFAULT_FILTERS.chainLabel)
+  }
+
+  /** Clicking the already-active column toggles direction; a new column starts at its sensible default. */
+  function handleSortChange(key: SortKey) {
+    if (key === sortKey) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
+    } else {
+      setSortKey(key)
+      setSortDirection(DEFAULT_SORT_DIRECTIONS[key])
+    }
   }
 
   return (
@@ -82,13 +97,16 @@ export function VaultsExplorer({ vaults }: VaultsExplorerProps) {
             chainLabel={chainLabel}
             onChainLabelChange={setChainLabel}
             chainOptions={chainOptions}
-            sortKey={sortKey}
-            onSortKeyChange={setSortKey}
           />
         </div>
 
         {visibleVaults.length > 0 ? (
-          <VaultTable vaults={visibleVaults} />
+          <VaultTable
+            vaults={visibleVaults}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+            onSortChange={handleSortChange}
+          />
         ) : (
           <Empty>
             <EmptyHeader>

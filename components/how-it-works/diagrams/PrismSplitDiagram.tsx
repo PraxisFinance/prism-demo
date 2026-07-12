@@ -124,6 +124,8 @@ export function PrismSplitDiagram({
     <DiagramFrame caption={caption}>
       <svg
         viewBox="0 0 400 220"
+        width="400"
+        height="220"
         className="h-auto w-full max-w-md"
         fill="none"
         role="img"

@@ -1,30 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Loader2Icon } from "lucide-react"
-import { toast } from "sonner"
+import { useState } from "react";
+import { Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { DialogFooter } from "@/components/ui/dialog"
-import { AmountReadout, formatBalanceLabel } from "@/components/modals/AmountReadout"
-import { ProfileCardSelector } from "@/components/vaults/ProfileCardSelector"
-import { SettlementPreviewTable } from "@/components/vaults/SettlementPreviewTable"
-import { chainLogoSrc } from "@/lib/chain-logos"
-import { daysUntil } from "@/lib/vault-filters"
-import { formatApy, formatUsd } from "@/lib/format"
-import { simulateTx } from "@/lib/mock-tx"
-import { effectiveApyForEntry, headlineApyForProfile } from "@/lib/portfolio"
-import { useUiStore } from "@/stores/ui-store"
-import { usePortfolioStore } from "@/stores/portfolio-store"
-import { useWalletStore } from "@/stores/wallet-store"
-import type { Vault } from "@/types"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { DialogFooter } from "@/components/ui/dialog";
+import {
+  AmountReadout,
+  formatBalanceLabel,
+} from "@/components/modals/AmountReadout";
+import { ProfileCardSelector } from "@/components/vaults/ProfileCardSelector";
+import { SettlementPreviewTable } from "@/components/vaults/SettlementPreviewTable";
+import { chainLogoSrc } from "@/lib/chain-logos";
+import { daysUntil } from "@/lib/vault-filters";
+import { formatApy, formatUsd } from "@/lib/format";
+import { simulateTx } from "@/lib/mock-tx";
+import { effectiveApyForEntry, headlineApyForProfile } from "@/lib/portfolio";
+import { useUiStore } from "@/stores/ui-store";
+import { usePortfolioStore } from "@/stores/portfolio-store";
+import { useWalletStore } from "@/stores/wallet-store";
+import type { Vault } from "@/types";
 
-const FALLBACK_ILLUSTRATIVE_DAYS = 30
+const FALLBACK_ILLUSTRATIVE_DAYS = 30;
 
 interface DepositPanelProps {
-  vault: Vault
-  onDone: () => void
+  vault: Vault;
+  onDone: () => void;
 }
 
 /**
@@ -40,41 +43,47 @@ interface DepositPanelProps {
  * opens. Cleared back to "" on a successful deposit.
  */
 export function DepositPanel({ vault, onDone }: DepositPanelProps) {
-  const profile = useUiStore((state) => state.selectedProfile)
-  const setProfile = useUiStore((state) => state.setProfile)
-  const amount = useUiStore((state) => state.depositAmount)
-  const setAmount = useUiStore((state) => state.setDepositAmount)
-  const balanceUsd = useWalletStore((state) => state.balanceUsd)
+  const profile = useUiStore((state) => state.selectedProfile);
+  const setProfile = useUiStore((state) => state.setProfile);
+  const amount = useUiStore((state) => state.depositAmount);
+  const setAmount = useUiStore((state) => state.setDepositAmount);
+  const balanceUsd = useWalletStore((state) => state.balanceUsd);
 
-  const [pending, setPending] = useState(false)
+  const [pending, setPending] = useState(false);
 
-  const matured = vault.market.matured
-  const amountUsd = Number.parseFloat(amount) || 0
-  const entryPrice = profile === "standard" ? undefined : vault.market.stablePrice
+  const matured = vault.market.matured;
+  const amountUsd = Number.parseFloat(amount) || 0;
+  const entryPrice =
+    profile === "standard" ? undefined : vault.market.stablePrice;
 
   const error =
     amount && amountUsd <= 0
       ? "Enter an amount greater than 0"
       : amountUsd > balanceUsd
         ? "Amount exceeds wallet balance"
-        : undefined
-  const valid = amountUsd > 0 && amountUsd <= balanceUsd && !matured
+        : undefined;
+  const valid = amountUsd > 0 && amountUsd <= balanceUsd && !matured;
 
-  const days = Math.max(daysUntil(vault.market.marketEndAt), 0) || FALLBACK_ILLUSTRATIVE_DAYS
-  const apyFraction = effectiveApyForEntry(profile, entryPrice, vault)
-  const projectedValue = amountUsd > 0 ? amountUsd * (1 + apyFraction * (days / 365)) : 0
+  const days =
+    Math.max(daysUntil(vault.market.marketEndAt), 0) ||
+    FALLBACK_ILLUSTRATIVE_DAYS;
+  const apyFraction = effectiveApyForEntry(profile, entryPrice, vault);
+  const projectedValue =
+    amountUsd > 0 ? amountUsd * (1 + apyFraction * (days / 365)) : 0;
 
   async function handleConfirm() {
-    if (!valid || pending) return
-    setPending(true)
-    const { hash } = await simulateTx()
-    usePortfolioStore.getState().deposit({ vaultId: vault.id, profile, amountUsd, entryPrice })
+    if (!valid || pending) return;
+    setPending(true);
+    const { hash } = await simulateTx();
+    usePortfolioStore
+      .getState()
+      .deposit({ vaultId: vault.id, profile, amountUsd, entryPrice });
     toast.success(`Deposited ${formatUsd(amountUsd)} into ${vault.name}`, {
       description: `Tx ${hash.slice(0, 10)}\u2026`,
-    })
-    setPending(false)
-    setAmount("")
-    onDone()
+    });
+    setPending(false);
+    setAmount("");
+    onDone();
   }
 
   return (
@@ -91,7 +100,13 @@ export function DepositPanel({ vault, onDone }: DepositPanelProps) {
 
       <div className="flex flex-col gap-1.5 border-t pt-4">
         <span className="text-xs text-foreground">Choose option</span>
-        <ProfileCardSelector value={profile} onValueChange={setProfile} className="max-w-full" disabled={pending} vault={vault} />
+        <ProfileCardSelector
+          value={profile}
+          onValueChange={setProfile}
+          className="max-w-full"
+          disabled={pending}
+          vault={vault}
+        />
       </div>
 
       <div className="flex items-center justify-between text-sm">
@@ -99,24 +114,33 @@ export function DepositPanel({ vault, onDone }: DepositPanelProps) {
         <div className="flex items-center gap-1.5">
           <Avatar size="sm" title={vault.chainLabel}>
             {chainLogoSrc(vault.chainLabel) && (
-              <AvatarImage src={chainLogoSrc(vault.chainLabel)} alt={vault.chainLabel} />
+              <AvatarImage
+                src={chainLogoSrc(vault.chainLabel)}
+                alt={vault.chainLabel}
+              />
             )}
             <AvatarFallback className="text-[10px]">
               {vault.chainLabel.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="font-medium text-foreground">{vault.chainLabel}</span>
+          <span className="font-medium text-foreground">
+            {vault.chainLabel}
+          </span>
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5 border-t pt-4 text-sm">
         <div className="flex items-center justify-between">
           <span className="text-foreground">Deposit amount</span>
-          <span className="font-medium text-foreground tabular-nums">{formatUsd(amountUsd)}</span>
+          <span className="font-medium text-foreground tabular-nums">
+            {formatUsd(amountUsd)}
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-foreground">APY</span>
-          <span className="font-medium text-foreground">{formatApy(headlineApyForProfile(vault, profile))}</span>
+          <span className="font-medium text-foreground">
+            {formatApy(headlineApyForProfile(vault, profile))}
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-foreground">Option</span>
@@ -127,24 +151,38 @@ export function DepositPanel({ vault, onDone }: DepositPanelProps) {
         {profile !== "standard" && (
           <div className="flex items-center justify-between">
             <span className="text-foreground">Target APY</span>
-            <span className="font-medium text-foreground">{formatApy(vault.market.targetApy)}</span>
+            <span className="font-medium text-foreground">
+              {formatApy(vault.market.targetApy)}
+            </span>
           </div>
         )}
         <div className="flex items-center justify-between">
           <span className="text-foreground">Est. value at {days}d</span>
-          <span className="font-medium text-foreground tabular-nums">{formatUsd(projectedValue)}</span>
+          <span className="font-medium text-foreground tabular-nums">
+            {formatUsd(projectedValue)}
+          </span>
         </div>
       </div>
 
-      <div className="border-t pt-4 pb-2">
+      <div className="border-t pt-4 pb-8">
         <SettlementPreviewTable vault={vault} profile={profile} />
       </div>
 
       <DialogFooter>
-        <Button variant="outline" className="flex-1" onClick={onDone} disabled={pending}>
+        <Button
+          variant="outline"
+          className="flex-1"
+          onClick={onDone}
+          disabled={pending}
+        >
           Cancel
         </Button>
-        <Button className="flex-1" onClick={handleConfirm} disabled={!valid || pending} aria-disabled={!valid || pending}>
+        <Button
+          className="flex-1"
+          onClick={handleConfirm}
+          disabled={!valid || pending}
+          aria-disabled={!valid || pending}
+        >
           {pending ? (
             <>
               <Loader2Icon className="animate-spin" />
@@ -158,5 +196,5 @@ export function DepositPanel({ vault, onDone }: DepositPanelProps) {
         </Button>
       </DialogFooter>
     </div>
-  )
+  );
 }

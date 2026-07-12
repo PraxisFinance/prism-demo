@@ -6,13 +6,23 @@
 import type { Vault, VaultCategory } from "@/types"
 
 export type SortKey = "predictedApy" | "currentApy" | "tvl" | "maturity"
+export type SortDirection = "asc" | "desc"
 
+/** Order matches the vault table's column order (see VaultTable's sortable headers). */
 export const SORT_OPTIONS: readonly { id: SortKey; label: string }[] = [
-  { id: "predictedApy", label: "Predicted APY" },
-  { id: "currentApy", label: "Current APY" },
   { id: "tvl", label: "TVL" },
-  { id: "maturity", label: "Days to maturity" },
+  { id: "currentApy", label: "Current APY" },
+  { id: "predictedApy", label: "Predicted APY" },
+  { id: "maturity", label: "Maturity" },
 ]
+
+/** Sensible default direction the first time a column header is clicked — biggest first for apy/tvl, soonest first for maturity. */
+export const DEFAULT_SORT_DIRECTIONS: Record<SortKey, SortDirection> = {
+  predictedApy: "desc",
+  currentApy: "desc",
+  tvl: "desc",
+  maturity: "asc",
+}
 
 export const ALL_CATEGORIES = "All" as const
 export type CategoryFilter = VaultCategory | typeof ALL_CATEGORIES
@@ -61,19 +71,22 @@ export function filterVaults(vaults: readonly Vault[], filters: VaultFilterState
   )
 }
 
-/** Descending for apy/tvl (biggest first), ascending for maturity (soonest — or already-matured — first). */
-export function sortVaults(vaults: readonly Vault[], sortKey: SortKey): Vault[] {
-  const sorted = [...vaults]
-  switch (sortKey) {
-    case "predictedApy":
-      return sorted.sort((a, b) => b.market.impliedApy - a.market.impliedApy)
-    case "currentApy":
-      return sorted.sort((a, b) => b.currentApy - a.currentApy)
-    case "tvl":
-      return sorted.sort((a, b) => b.tvlUsd - a.tvlUsd)
-    case "maturity":
-      return sorted.sort((a, b) => a.market.marketEndAt - b.market.marketEndAt)
-  }
+const ASCENDING_COMPARATORS: Record<SortKey, (a: Vault, b: Vault) => number> = {
+  predictedApy: (a, b) => a.market.impliedApy - b.market.impliedApy,
+  currentApy: (a, b) => a.currentApy - b.currentApy,
+  tvl: (a, b) => a.tvlUsd - b.tvlUsd,
+  maturity: (a, b) => a.market.marketEndAt - b.market.marketEndAt,
+}
+
+/** Direction defaults to DEFAULT_SORT_DIRECTIONS[sortKey] (biggest first for apy/tvl, soonest — or already-matured — first for maturity). */
+export function sortVaults(
+  vaults: readonly Vault[],
+  sortKey: SortKey,
+  direction: SortDirection = DEFAULT_SORT_DIRECTIONS[sortKey]
+): Vault[] {
+  const compare = ASCENDING_COMPARATORS[sortKey]
+  const sign = direction === "asc" ? 1 : -1
+  return [...vaults].sort((a, b) => sign * compare(a, b))
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000

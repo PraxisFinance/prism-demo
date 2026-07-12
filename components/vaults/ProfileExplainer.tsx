@@ -92,7 +92,13 @@ function ComparativeCurve({ profile }: { profile: RiskProfile }) {
   ]
 
   return (
-    <svg viewBox="0 0 120 56" className="h-12 w-full" aria-hidden="true">
+    <svg
+      viewBox="0 0 120 56"
+      width="120"
+      height="56"
+      className="h-12 w-full"
+      aria-hidden="true"
+    >
       {ordered.map((meta) => {
         const active = meta.id === profile
         return (
