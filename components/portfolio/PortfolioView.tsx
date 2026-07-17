@@ -21,6 +21,7 @@ import {
   PositionsTable,
   PositionsTotalsBar,
 } from "@/components/portfolio/PositionsTable";
+import { usePersistedStoresHydrated } from "@/components/providers/StoreHydration";
 import { computeAllocation, computePortfolioTotals } from "@/lib/portfolio";
 import { requireWalletConnected } from "@/lib/stake-gating";
 import { usePortfolioStore } from "@/stores/portfolio-store";
@@ -38,9 +39,10 @@ interface PortfolioViewProps {
  * immediately on every deposit/withdraw since `positions` itself changes),
  * matching the "compute client-side, not during SSR render" rule (plan/08
  * §10 pre-deploy checklist) since positions only ever exist client-side
- * anyway (session-only Zustand state, never present during prerendering).
+ * anyway (client Zustand state, never present during prerendering).
  */
 export function PortfolioView({ vaults }: PortfolioViewProps) {
+  const hydrated = usePersistedStoresHydrated();
   const connected = useWalletStore((state) => state.connected);
   const connecting = useWalletStore((state) => state.connecting);
   const balanceUsd = useWalletStore((state) => state.balanceUsd);
@@ -66,6 +68,10 @@ export function PortfolioView({ vaults }: PortfolioViewProps) {
   }
   function handleWithdraw(positionId: string) {
     if (requireWalletConnected(connected, "withdraw")) openWithdraw(positionId);
+  }
+
+  if (!hydrated) {
+    return null;
   }
 
   if (!connected) {

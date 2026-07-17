@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { usePersistedStoresHydrated } from "@/components/providers/StoreHydration"
 import { formatCurrency, truncateAddress } from "@/lib/format"
 import { useWalletStore } from "@/stores/wallet-store"
 import { resetPortfolioOnDisconnect } from "@/stores/portfolio-store"
@@ -21,12 +22,22 @@ import { resetPortfolioOnDisconnect } from "@/stores/portfolio-store"
  * See plan/03-design-system-and-figma.md §4.
  */
 export function ConnectWalletButton() {
+  const hydrated = usePersistedStoresHydrated()
   const connected = useWalletStore((state) => state.connected)
   const connecting = useWalletStore((state) => state.connecting)
   const address = useWalletStore((state) => state.address)
   const balanceUsd = useWalletStore((state) => state.balanceUsd)
   const connect = useWalletStore((state) => state.connect)
   const disconnect = useWalletStore((state) => state.disconnect)
+
+  if (!hydrated) {
+    return (
+      <Button disabled>
+        <Wallet />
+        Connect Wallet
+      </Button>
+    )
+  }
 
   if (!connected) {
     return (
